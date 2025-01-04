@@ -1,0 +1,25 @@
+{
+  "name": "testwand",
+  "description": "Testwand is a CLI and library for automatically generating TypeScript tests using AI.",
+  "keywords": [
+    "typescript",
+    "test",
+    "test-generation",
+    "cli",
+    "ai",
+    "automation",
+    "jest"
+  ],
+  "version": "0.0.2",
+  "homepage": "https://testwand.dev/",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mhagmajer/testwand.git"
+  },
+  "author": "Marcin Hagmajer",
+  "license": "MIT"
+}
