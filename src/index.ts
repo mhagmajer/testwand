@@ -1,0 +1,5 @@
+export function sayHello(name: string) {
+  return `Hello, ${name}!`;
+}
+
+console.log('Hello world!');
