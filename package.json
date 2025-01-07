@@ -1,6 +1,6 @@
 {
   "name": "testwand",
-  "description": "Testwand is a CLI and library for automatically generating TypeScript tests using AI.",
+  "description": "Testwand is a CLI for automatically generating TypeScript tests using AI.",
   "keywords": [
     "typescript",
     "test",
