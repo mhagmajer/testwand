@@ -32,16 +32,10 @@
     "incremental": true,
     // Preserve symbolic links when resolving modules, matching Node.js behavior
     "preserveSymlinks": true,
-    // Map module paths for simplified imports (e.g., import 'xyz' -> './src/xyz')
-    "paths": {
-      "*": [
-        "./src/*"
-      ]
-    }
   },
   // Include all TypeScript files in the "src" directory and its subdirectories
   "include": [
-    "src/**/*"
+    "./src/**/*"
   ],
   // Exclude specific directories and test files from compilation
   "exclude": [
