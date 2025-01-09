@@ -10,7 +10,7 @@
     "automation",
     "jest"
   ],
-  "version": "0.0.3",
+  "version": "0.0.4",
   "homepage": "https://testwand.dev/",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
