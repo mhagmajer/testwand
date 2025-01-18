@@ -3,9 +3,9 @@
     // Target modern JavaScript (ES2022) instead of the default ES3
     "target": "ES2022",
     // Use Node16 module system for modern ESM support
-    "module": "Node16",
+    "module": "NodeNext",
     // Align module resolution with Node16
-    "moduleResolution": "node16",
+    "moduleResolution": "nodenext",
     // Output compiled files to the "dist" directory
     "outDir": "dist",
     // Specify "src" as the root directory for input files

@@ -1,6 +1,6 @@
 import { add, subtract } from './module';
 
-describe('myModule', () => {
+describe('Math Functions', () => {
   describe('add', () => {
     it('should return the sum of two positive numbers', () => {
       expect(add(2, 3)).toBe(5);
@@ -14,13 +14,13 @@ describe('myModule', () => {
       expect(add(-2, -3)).toBe(-5);
     });
 
-    it('should return the sum when one of the numbers is zero', () => {
-      expect(add(0, 5)).toBe(5);
+    it('should return the same number when adding zero', () => {
       expect(add(5, 0)).toBe(5);
+      expect(add(0, 5)).toBe(5);
     });
 
-    it('should return the correct sum for large numbers', () => {
-      expect(add(1_000_000, 2_000_000)).toBe(3_000_000);
+    it('should return zero when adding two zeros', () => {
+      expect(add(0, 0)).toBe(0);
     });
   });
 
@@ -37,13 +37,13 @@ describe('myModule', () => {
       expect(subtract(-5, -3)).toBe(-2);
     });
 
-    it('should return the correct result when subtracting zero', () => {
+    it('should return the same number when subtracting zero', () => {
       expect(subtract(5, 0)).toBe(5);
       expect(subtract(0, 5)).toBe(-5);
     });
 
-    it('should return the correct difference for large numbers', () => {
-      expect(subtract(2_000_000, 1_000_000)).toBe(1_000_000);
+    it('should return zero when subtracting a number from itself', () => {
+      expect(subtract(5, 5)).toBe(0);
     });
   });
 });

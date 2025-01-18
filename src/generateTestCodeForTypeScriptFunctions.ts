@@ -1,12 +1,19 @@
 import OpenAI from 'openai';
-import type { FunctionSignature } from './getTypeScriptFunctionsForFilePath';
-import { isDebugMode } from './utils';
+import type { FunctionSignature } from './getTypeScriptFunctionsForFilePath.js';
+import { isDebugMode } from './utils/env.js';
+import { getRelativePathForImport } from './utils/getRelativePathForImport.js';
 
 const apiKey = process.env.OPENAI_API_KEY || '';
 
-export async function generateTestCodeForTypeScriptFunctions(
-  signatures: FunctionSignature[]
-): Promise<string> {
+export async function generateTestCodeForTypeScriptFunctions({
+  testPath,
+  modulePath,
+  signatures,
+}: {
+  testPath: string;
+  modulePath: string;
+  signatures: FunctionSignature[];
+}): Promise<string> {
   // Basic guard
   if (!apiKey) {
     throw new Error('Missing OPENAI_API_KEY. Provide it via env or config.');
@@ -16,7 +23,8 @@ export async function generateTestCodeForTypeScriptFunctions(
 
   // Build a single prompt to generate test code for all discovered functions.
   // For large codebases, you might chunk this up, but for an MVP, let's keep it simple.
-  const prompt = `Generate only the TypeScript Jest test code for the following functions from the module \`myModule.ts\`. \
+  const moduleRelativePath = getRelativePathForImport(testPath, modulePath);
+  const prompt = `Generate only the TypeScript Jest test code for the following functions from the module at \`${moduleRelativePath}\`. \
 Include relevant comments within the source code to explain each test case.
 
 ${signatures

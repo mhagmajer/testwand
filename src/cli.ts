@@ -4,13 +4,17 @@ process.emitWarning = () => {}; // Deprecation working suppression until openai 
 import { Command } from 'commander';
 import * as fs from 'fs';
 import { writeFile } from 'fs/promises';
-import packageJson from '../package.json';
-import { findProjectRoot } from './findProjectRoot';
-import { generateJestTestPaths } from './generateJestTestPaths';
-import { generateTestCodeForTypeScriptFunctions } from './generateTestCodeForTypeScriptFunctions';
-import { getJestConfig } from './getJestConfig';
-import { getTypeScriptFunctionsForFilePath } from './getTypeScriptFunctionsForFilePath';
-import { isJestTestFile } from './isJestTestFile';
+import * as path from 'path';
+import yoctoSpinner from 'yocto-spinner';
+import { findProjectRoot } from './findProjectRoot.js';
+import { generateJestTestPaths } from './generateJestTestPaths.js';
+import { generateTestCodeForTypeScriptFunctions } from './generateTestCodeForTypeScriptFunctions.js';
+import { getJestConfig } from './getJestConfig.js';
+import { getTypeScriptFunctionsForFilePath } from './getTypeScriptFunctionsForFilePath.js';
+import { isJestTestFile } from './isJestTestFile.js';
+import { packageJson } from './packageJson.js';
+import { stripMarkdownCodeBlock } from './utils/stripMarkdownCodeBlock.js';
+import { getRelativePathForImport } from './utils/getRelativePathForImport.js';
 
 const program = new Command();
 
@@ -37,11 +41,12 @@ program
       return;
     }
 
-    const projectRoot = await findProjectRoot(filePath);
+    const modulePath = path.resolve(filePath);
+    const projectRoot = await findProjectRoot(modulePath);
     const jestConfig = await getJestConfig(projectRoot);
-    const possibleTestPaths = generateJestTestPaths(filePath);
+    const possibleTestPaths = generateJestTestPaths(modulePath);
     if (possibleTestPaths.length === 0) {
-      throw new Error(`No possible test paths for ${filePath}`);
+      throw new Error(`No possible test paths for ${modulePath}`);
     }
 
     const testPath =
@@ -49,20 +54,35 @@ program
         (path) => fs.existsSync(path) && isJestTestFile(jestConfig, path)
       ) ?? possibleTestPaths[0];
 
-    const code = await generateTestModule(filePath);
+    const spinner = yoctoSpinner({
+      text: 'Generating tests with AI...',
+    }).start();
+    try {
+      const code = await generateTestModule({ modulePath, testPath });
 
-    if (!code) {
-      return;
+      if (!code) {
+        throw new Error('Generated code is empty');
+      }
+
+      await writeFile(testPath, code, { encoding: 'utf-8' });
+
+      spinner.success(`Test code written to ${testPath}`);
+    } catch (e) {
+      spinner.error(String(e));
+    } finally {
+      spinner.stop();
     }
-
-    await writeFile(testPath, code, { encoding: 'utf-8' });
-
-    console.log('Test code written to', testPath);
   });
 
 program.parse(process.argv);
 
-async function generateTestModule(modulePath: string) {
+async function generateTestModule({
+  modulePath,
+  testPath,
+}: {
+  modulePath: string;
+  testPath: string;
+}) {
   if (!fs.existsSync(modulePath)) {
     console.error(`Error: Module file ${modulePath} not found.`);
     process.exit(1);
@@ -76,6 +96,13 @@ async function generateTestModule(modulePath: string) {
     return;
   }
 
-  const code = await generateTestCodeForTypeScriptFunctions(signatures);
+  const code = stripMarkdownCodeBlock(
+    await generateTestCodeForTypeScriptFunctions({
+      testPath,
+      modulePath,
+      signatures,
+    })
+  );
+
   return code;
 }
